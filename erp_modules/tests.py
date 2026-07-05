@@ -57,3 +57,35 @@ class ModuleCrudTests(APITestCase):
         })
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertTrue(Lead.objects.filter(company__icontains='Meta').exists())
+
+    def test_module_search_and_inline_edit(self):
+        employee = Employee.objects.create(
+            name='Ava Carter',
+            email='ava.search@example.com',
+            department='Sales',
+            position='Manager',
+            status='active',
+        )
+        Employee.objects.create(
+            name='Mina Patel',
+            email='mina@example.com',
+            department='HR',
+            position='Lead',
+            status='inactive',
+        )
+
+        response = self.client.get(reverse('module_page', kwargs={'module_slug': 'employees'}), {'q': 'ava', 'status': 'active'})
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertContains(response, 'Ava Carter')
+        self.assertNotContains(response, 'Mina Patel')
+
+        update_response = self.client.post(reverse('module_page', kwargs={'module_slug': 'employees'}), {
+            'record_id': employee.pk,
+            'name': 'Ava Carter',
+            'email': 'ava.search@example.com',
+            'department': 'Operations',
+            'position': 'Director',
+            'status': 'active',
+        })
+        self.assertEqual(update_response.status_code, status.HTTP_302_FOUND)
+        self.assertEqual(Employee.objects.get(pk=employee.pk).department, 'Operations')

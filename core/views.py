@@ -161,9 +161,19 @@ def reports_view(request):
 
 def module_page_view(request, module_slug):
     module = MODULE_DETAILS.get(module_slug, MODULE_DETAILS['overview'])
+    q = request.GET.get('q', '').strip()
+    status_filter = request.GET.get('status', '').strip()
 
     if request.method == 'POST':
-        if module_slug == 'employees':
+        record_id = request.POST.get('record_id')
+        if record_id and module_slug == 'employees':
+            employee = Employee.objects.filter(pk=record_id).first()
+            if employee:
+                form = EmployeeForm(request.POST, instance=employee)
+                if form.is_valid():
+                    form.save()
+                    return redirect('module_page', module_slug)
+        elif module_slug == 'employees':
             form = EmployeeForm(request.POST)
             if form.is_valid():
                 form.save()
@@ -215,11 +225,40 @@ def module_page_view(request, module_slug):
         return redirect('module_page', module_slug)
 
     employees = Employee.objects.all() if module_slug == 'employees' else []
+    if module_slug == 'employees':
+        employees = employees.filter(name__icontains=q) if q else employees
+        if status_filter:
+            employees = employees.filter(status=status_filter)
+
     leads = Lead.objects.select_related('owner').all() if module_slug == 'leads' else []
+    if module_slug == 'leads':
+        leads = leads.filter(full_name__icontains=q) if q else leads
+        if status_filter:
+            leads = leads.filter(stage=status_filter)
+
     vendors = Vendor.objects.all() if module_slug == 'vendors' else []
+    if module_slug == 'vendors':
+        vendors = vendors.filter(name__icontains=q) if q else vendors
+        if status_filter:
+            vendors = vendors.filter(status=status_filter)
+
     products = Product.objects.all() if module_slug == 'products' else []
+    if module_slug == 'products':
+        products = products.filter(name__icontains=q) if q else products
+        if status_filter:
+            products = products.filter(status=status_filter)
+
     invoices = Invoice.objects.all() if module_slug == 'invoices' else []
+    if module_slug == 'invoices':
+        invoices = invoices.filter(invoice_number__icontains=q) if q else invoices
+        if status_filter:
+            invoices = invoices.filter(status=status_filter)
+
     projects = Project.objects.all() if module_slug == 'projects' else []
+    if module_slug == 'projects':
+        projects = projects.filter(name__icontains=q) if q else projects
+        if status_filter:
+            projects = projects.filter(status=status_filter)
     employee_form = EmployeeForm() if module_slug == 'employees' else None
     lead_form = LeadForm() if module_slug == 'leads' else None
     vendor_form = VendorForm() if module_slug == 'vendors' else None
@@ -231,6 +270,8 @@ def module_page_view(request, module_slug):
         'active_page': module_slug,
         'module': module,
         'module_slug': module_slug,
+        'q': q,
+        'status_filter': status_filter,
         'employees': employees,
         'leads': leads,
         'vendors': vendors,

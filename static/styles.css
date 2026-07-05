@@ -186,6 +186,10 @@ body {
 .data-table { width: 100%; border-collapse: collapse; }
 .data-table th, .data-table td { text-align: left; padding: 10px 8px; border-bottom: 1px solid var(--border); }
 .data-table a { color: var(--accent); text-decoration: none; }
+.toolbar { display: flex; gap: 8px; margin-bottom: 12px; flex-wrap: wrap; }
+.toolbar input, .toolbar select { padding: 8px 10px; border: 1px solid var(--border); border-radius: 8px; }
+.inline-form { display: inline-flex; margin-right: 8px; }
+.inline-form button { padding: 6px 10px; border-radius: 8px; border: 1px solid var(--border); background: #fff; }
 
 @media (max-width: 960px) {
     .hero-grid, .content-grid, .content-grid.two-col { grid-template-columns: 1fr; }
