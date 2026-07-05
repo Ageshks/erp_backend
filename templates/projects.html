@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+
+{% block page_title %}Projects{% endblock %}
+
+{% block content %}
+<div class="content-grid two-col">
+    <section class="card">
+        <div class="card-header">
+            <h3>Active Projects</h3>
+            <a href="#">Board</a>
+        </div>
+        <div class="metric-stack">
+            <div><strong>8</strong><span>In progress</span></div>
+            <div><strong>3</strong><span>At risk</span></div>
+            <div><strong>92%</strong><span>On target</span></div>
+        </div>
+    </section>
+
+    <section class="card">
+        <div class="card-header">
+            <h3>Delivery Timeline</h3>
+            <a href="#">Plan</a>
+        </div>
+        <ul class="list">
+            <li><span>Mobile rollout</span><strong>Due in 5 days</strong></li>
+            <li><span>Warehouse sync</span><strong>Due in 12 days</strong></li>
+            <li><span>Analytics update</span><strong>Due in 18 days</strong></li>
+        </ul>
+    </section>
+</div>
+{% endblock %}

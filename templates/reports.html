@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+
+{% block page_title %}Reports{% endblock %}
+
+{% block content %}
+<div class="content-grid two-col">
+    <section class="card">
+        <div class="card-header">
+            <h3>Executive Summary</h3>
+            <a href="#">Export</a>
+        </div>
+        <div class="metric-stack">
+            <div><strong>84%</strong><span>Forecast accuracy</span></div>
+            <div><strong>7.2%</strong><span>YoY growth</span></div>
+            <div><strong>1.4x</strong><span>Productivity gain</span></div>
+        </div>
+    </section>
+
+    <section class="card">
+        <div class="card-header">
+            <h3>Key Reports</h3>
+            <a href="#">Open</a>
+        </div>
+        <ul class="list">
+            <li><span>Revenue dashboard</span><strong>Updated</strong></li>
+            <li><span>Operations review</span><strong>Pending</strong></li>
+            <li><span>Compliance summary</span><strong>Ready</strong></li>
+        </ul>
+    </section>
+</div>
+{% endblock %}

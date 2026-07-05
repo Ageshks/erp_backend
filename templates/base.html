@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Zoho-style ERP</title>
+    {% load static %}
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'styles.css' %}">
+</head>
+<body>
+    <div class="app-shell">
+        <aside class="sidebar">
+            <div class="brand">
+                <div class="brand-mark">Z</div>
+                <div>
+                    <h1>Zoho ERP</h1>
+                    <p>Business Suite</p>
+                </div>
+            </div>
+
+            <nav class="nav-links">
+                <div class="nav-group">
+                    <p class="nav-group-title">Dashboard</p>
+                    <a href="{% url 'dashboard' %}" class="nav-item {% if active_page == 'dashboard' %}active{% endif %}">Overview</a>
+                    <a href="{% url 'module_page' 'analytics' %}" class="nav-item {% if active_page == 'analytics' %}active{% endif %}">Analytics</a>
+                    <a href="{% url 'module_page' 'reports' %}" class="nav-item {% if active_page == 'reports' %}active{% endif %}">Reports</a>
+                </div>
+
+                <div class="nav-group">
+                    <p class="nav-group-title">Organization</p>
+                    <a href="{% url 'module_page' 'company-profile' %}" class="nav-item {% if active_page == 'company-profile' %}active{% endif %}">Company Profile</a>
+                    <a href="{% url 'module_page' 'employees' %}" class="nav-item {% if active_page == 'employees' %}active{% endif %}">Employees</a>
+                    <a href="{% url 'module_page' 'attendance' %}" class="nav-item {% if active_page == 'attendance' %}active{% endif %}">Attendance</a>
+                </div>
+
+                <div class="nav-group">
+                    <p class="nav-group-title">Sales</p>
+                    <a href="{% url 'module_page' 'leads' %}" class="nav-item {% if active_page == 'leads' %}active{% endif %}">Leads</a>
+                    <a href="{% url 'module_page' 'customers' %}" class="nav-item {% if active_page == 'customers' %}active{% endif %}">Customers</a>
+                    <a href="{% url 'module_page' 'invoices' %}" class="nav-item {% if active_page == 'invoices' %}active{% endif %}">Invoices</a>
+                </div>
+
+                <div class="nav-group">
+                    <p class="nav-group-title">Procurement</p>
+                    <a href="{% url 'module_page' 'vendors' %}" class="nav-item {% if active_page == 'vendors' %}active{% endif %}">Vendors</a>
+                    <a href="{% url 'module_page' 'products' %}" class="nav-item {% if active_page == 'products' %}active{% endif %}">Products</a>
+                </div>
+
+                <div class="nav-group">
+                    <p class="nav-group-title">Operations</p>
+                    <a href="{% url 'module_page' 'projects' %}" class="nav-item {% if active_page == 'projects' %}active{% endif %}">Projects</a>
+                    <a href="{% url 'module_page' 'user-management' %}" class="nav-item {% if active_page == 'user-management' %}active{% endif %}">User Management</a>
+                    <a href="{% url 'module_page' 'manage-organizations' %}" class="nav-item {% if active_page == 'manage-organizations' %}active{% endif %}">Manage Organizations</a>
+                </div>
+            </nav>
+
+            <div class="sidebar-card">
+                <h3>Weekly Focus</h3>
+                <p>Close 12 deals and review payroll approvals.</p>
+            </div>
+        </aside>
+
+        <main class="content">
+            <header class="topbar">
+                <div>
+                    <p class="eyebrow">Operations Center</p>
+                    <h2>{% block page_title %}ERP Workspace{% endblock %}</h2>
+                </div>
+                <div class="topbar-actions">
+                    <button class="ghost-btn">Export</button>
+                    <button class="primary-btn">New Record</button>
+                </div>
+            </header>
+
+            {% block content %}{% endblock %}
+        </main>
+    </div>
+</body>
+</html>

@@ -1,0 +1,234 @@
+{% extends 'base.html' %}
+
+{% block page_title %}{{ module.title }}{% endblock %}
+
+{% block content %}
+<div class="card hero-card">
+    <div>
+        <p class="eyebrow">ERP Module</p>
+        <h3>{{ module.title }}</h3>
+        <p>{{ module.subtitle }}</p>
+    </div>
+    <div class="hero-metric">
+        <strong>{{ module.highlights|length }}</strong>
+        <span>Ready features</span>
+    </div>
+</div>
+
+{% if module_slug == 'employees' %}
+<div class="content-grid two-col">
+    <section class="card">
+        <div class="card-header">
+            <h3>Add Employee</h3>
+        </div>
+        <form method="post" class="stacked-form">
+            {% csrf_token %}
+            {{ employee_form.as_p }}
+            <button class="primary-btn" type="submit">Save Employee</button>
+        </form>
+    </section>
+
+    <section class="card">
+        <div class="card-header">
+            <h3>Employee Directory</h3>
+        </div>
+        <table class="data-table">
+            <thead>
+                <tr><th>Name</th><th>Department</th><th>Status</th><th>Actions</th></tr>
+            </thead>
+            <tbody>
+                {% for employee in employees %}
+                <tr>
+                    <td>{{ employee.name }}</td>
+                    <td>{{ employee.department }}</td>
+                    <td>{{ employee.status }}</td>
+                    <td><a href="?delete={{ employee.pk }}">Delete</a></td>
+                </tr>
+                {% empty %}
+                <tr><td colspan="4">No employees yet.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </section>
+</div>
+{% elif module_slug == 'leads' %}
+<div class="content-grid two-col">
+    <section class="card">
+        <div class="card-header">
+            <h3>Create Lead</h3>
+        </div>
+        <form method="post" class="stacked-form">
+            {% csrf_token %}
+            {{ lead_form.as_p }}
+            <button class="primary-btn" type="submit">Save Lead</button>
+        </form>
+    </section>
+
+    <section class="card">
+        <div class="card-header">
+            <h3>Lead Pipeline</h3>
+        </div>
+        <table class="data-table">
+            <thead>
+                <tr><th>Name</th><th>Company</th><th>Stage</th><th>Actions</th></tr>
+            </thead>
+            <tbody>
+                {% for lead in leads %}
+                <tr>
+                    <td>{{ lead.full_name }}</td>
+                    <td>{{ lead.company }}</td>
+                    <td>{{ lead.stage }}</td>
+                    <td><a href="?delete={{ lead.pk }}">Delete</a></td>
+                </tr>
+                {% empty %}
+                <tr><td colspan="4">No leads yet.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </section>
+</div>
+{% elif module_slug == 'vendors' %}
+<div class="content-grid two-col">
+    <section class="card">
+        <div class="card-header">
+            <h3>Add Vendor</h3>
+        </div>
+        <form method="post" class="stacked-form">
+            {% csrf_token %}
+            {{ vendor_form.as_p }}
+            <button class="primary-btn" type="submit">Save Vendor</button>
+        </form>
+    </section>
+
+    <section class="card">
+        <div class="card-header">
+            <h3>Vendor Directory</h3>
+        </div>
+        <table class="data-table">
+            <thead><tr><th>Name</th><th>Company</th><th>Status</th><th>Actions</th></tr></thead>
+            <tbody>
+                {% for vendor in vendors %}
+                <tr><td>{{ vendor.name }}</td><td>{{ vendor.company }}</td><td>{{ vendor.status }}</td><td><a href="?delete={{ vendor.pk }}">Delete</a></td></tr>
+                {% empty %}<tr><td colspan="4">No vendors yet.</td></tr>{% endfor %}
+            </tbody>
+        </table>
+    </section>
+</div>
+{% elif module_slug == 'products' %}
+<div class="content-grid two-col">
+    <section class="card">
+        <div class="card-header">
+            <h3>Add Product</h3>
+        </div>
+        <form method="post" class="stacked-form">
+            {% csrf_token %}
+            {{ product_form.as_p }}
+            <button class="primary-btn" type="submit">Save Product</button>
+        </form>
+    </section>
+
+    <section class="card">
+        <div class="card-header">
+            <h3>Product Catalog</h3>
+        </div>
+        <table class="data-table">
+            <thead><tr><th>Name</th><th>SKU</th><th>Stock</th><th>Actions</th></tr></thead>
+            <tbody>
+                {% for product in products %}
+                <tr><td>{{ product.name }}</td><td>{{ product.sku }}</td><td>{{ product.stock }}</td><td><a href="?delete={{ product.pk }}">Delete</a></td></tr>
+                {% empty %}<tr><td colspan="4">No products yet.</td></tr>{% endfor %}
+            </tbody>
+        </table>
+    </section>
+</div>
+{% elif module_slug == 'invoices' %}
+<div class="content-grid two-col">
+    <section class="card">
+        <div class="card-header">
+            <h3>Create Invoice</h3>
+        </div>
+        <form method="post" class="stacked-form">
+            {% csrf_token %}
+            {{ invoice_form.as_p }}
+            <button class="primary-btn" type="submit">Save Invoice</button>
+        </form>
+    </section>
+
+    <section class="card">
+        <div class="card-header">
+            <h3>Invoice Ledger</h3>
+        </div>
+        <table class="data-table">
+            <thead><tr><th>Invoice</th><th>Customer</th><th>Status</th><th>Actions</th></tr></thead>
+            <tbody>
+                {% for invoice in invoices %}
+                <tr><td>{{ invoice.invoice_number }}</td><td>{{ invoice.customer_name }}</td><td>{{ invoice.status }}</td><td><a href="?delete={{ invoice.pk }}">Delete</a></td></tr>
+                {% empty %}<tr><td colspan="4">No invoices yet.</td></tr>{% endfor %}
+            </tbody>
+        </table>
+    </section>
+</div>
+{% elif module_slug == 'projects' %}
+<div class="content-grid two-col">
+    <section class="card">
+        <div class="card-header">
+            <h3>Create Project</h3>
+        </div>
+        <form method="post" class="stacked-form">
+            {% csrf_token %}
+            {{ project_form.as_p }}
+            <button class="primary-btn" type="submit">Save Project</button>
+        </form>
+    </section>
+
+    <section class="card">
+        <div class="card-header">
+            <h3>Project Portfolio</h3>
+        </div>
+        <table class="data-table">
+            <thead><tr><th>Name</th><th>Client</th><th>Status</th><th>Actions</th></tr></thead>
+            <tbody>
+                {% for project in projects %}
+                <tr><td>{{ project.name }}</td><td>{{ project.client }}</td><td>{{ project.status }}</td><td><a href="?delete={{ project.pk }}">Delete</a></td></tr>
+                {% empty %}<tr><td colspan="4">No projects yet.</td></tr>{% endfor %}
+            </tbody>
+        </table>
+    </section>
+</div>
+{% else %}
+<div class="content-grid two-col">
+    <section class="card">
+        <div class="card-header">
+            <h3>Highlights</h3>
+        </div>
+        <ul class="list">
+            {% for item in module.highlights %}
+            <li><span>{{ item }}</span><strong>Ready</strong></li>
+            {% endfor %}
+        </ul>
+    </section>
+
+    <section class="card">
+        <div class="card-header">
+            <h3>Table Actions</h3>
+        </div>
+        <ul class="list">
+            {% for action in module.table_actions %}
+            <li><span>{{ action }}</span><strong>Enabled</strong></li>
+            {% endfor %}
+        </ul>
+    </section>
+</div>
+
+<div class="card" style="margin-top: 18px;">
+    <div class="card-header">
+        <h3>Reusable Modals</h3>
+    </div>
+    <ul class="list">
+        {% for modal in module.modals %}
+        <li><span>{{ modal }}</span><strong>Available</strong></li>
+        {% endfor %}
+    </ul>
+</div>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+
+{% block page_title %}CRM{% endblock %}
+
+{% block content %}
+<div class="content-grid two-col">
+    <section class="card">
+        <div class="card-header">
+            <h3>Pipeline Summary</h3>
+            <a href="#">Open pipeline</a>
+        </div>
+        <div class="metric-stack">
+            <div><strong>42</strong><span>Qualified leads</span></div>
+            <div><strong>11</strong><span>Negotiations</span></div>
+            <div><strong>6</strong><span>Won this month</span></div>
+        </div>
+    </section>
+
+    <section class="card">
+        <div class="card-header">
+            <h3>Customer Highlights</h3>
+            <a href="#">View</a>
+        </div>
+        <ul class="list">
+            <li><span>Northwind Co.</span><strong>$22k</strong></li>
+            <li><span>Contoso</span><strong>$14k</strong></li>
+            <li><span>Fabric Labs</span><strong>$9k</strong></li>
+        </ul>
+    </section>
+</div>
+{% endblock %}

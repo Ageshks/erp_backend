@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+
+{% block page_title %}Finance{% endblock %}
+
+{% block content %}
+<div class="content-grid two-col">
+    <section class="card">
+        <div class="card-header">
+            <h3>Cash Flow</h3>
+            <a href="#">Reports</a>
+        </div>
+        <div class="metric-stack">
+            <div><strong>$128k</strong><span>Incoming</span></div>
+            <div><strong>$74k</strong><span>Outgoing</span></div>
+            <div><strong>$54k</strong><span>Net flow</span></div>
+        </div>
+    </section>
+
+    <section class="card">
+        <div class="card-header">
+            <h3>Invoice Status</h3>
+            <a href="#">Manage</a>
+        </div>
+        <ul class="list">
+            <li><span>Paid invoices</span><strong>89</strong></li>
+            <li><span>Due this week</span><strong>12</strong></li>
+            <li><span>Overdue</span><strong>3</strong></li>
+        </ul>
+    </section>
+</div>
+{% endblock %}

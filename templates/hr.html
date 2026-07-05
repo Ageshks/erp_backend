@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+
+{% block page_title %}HR{% endblock %}
+
+{% block content %}
+<div class="content-grid two-col">
+    <section class="card">
+        <div class="card-header">
+            <h3>People Metrics</h3>
+            <a href="#">Directory</a>
+        </div>
+        <div class="metric-stack">
+            <div><strong>128</strong><span>Employees</span></div>
+            <div><strong>6</strong><span>New hires</span></div>
+            <div><strong>2</strong><span>Open roles</span></div>
+        </div>
+    </section>
+
+    <section class="card">
+        <div class="card-header">
+            <h3>HR Requests</h3>
+            <a href="#">Review</a>
+        </div>
+        <ul class="list">
+            <li><span>Leave approvals</span><strong>5</strong></li>
+            <li><span>Benefits questions</span><strong>3</strong></li>
+            <li><span>Payroll corrections</span><strong>1</strong></li>
+        </ul>
+    </section>
+</div>
+{% endblock %}

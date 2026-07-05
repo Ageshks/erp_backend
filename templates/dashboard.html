@@ -1,0 +1,91 @@
+{% extends 'base.html' %}
+
+{% block page_title %}Dashboard{% endblock %}
+
+{% block content %}
+<div class="hero-grid">
+    <section class="card hero-card">
+        <div>
+            <p class="eyebrow">Performance Overview</p>
+            <h3>Every operation is visible from one place.</h3>
+            <p>Track employees, leads, and Meta campaign responses from a single command center.</p>
+        </div>
+        <div class="hero-metric">
+            <strong>{{ lead_count }}</strong>
+            <span>Live leads</span>
+        </div>
+    </section>
+
+    <section class="card stats-grid">
+        <div>
+            <h4>{{ employee_count }}</h4>
+            <p>Employees</p>
+        </div>
+        <div>
+            <h4>{{ lead_count }}</h4>
+            <p>Leads</p>
+        </div>
+        <div>
+            <h4>24</h4>
+            <p>Open deals</p>
+        </div>
+        <div>
+            <h4>12</h4>
+            <p>Pending approvals</p>
+        </div>
+    </section>
+</div>
+
+<div class="content-grid">
+    <section class="card">
+        <div class="card-header">
+            <h3>Run Meta Ad</h3>
+        </div>
+        <form method="post" class="stacked-form">
+            {% csrf_token %}
+            {{ campaign_form.as_p }}
+            <button class="primary-btn" type="submit">Launch Campaign</button>
+        </form>
+    </section>
+
+    <section class="card">
+        <div class="card-header">
+            <h3>Recent Leads</h3>
+            <a href="{% url 'module_page' 'leads' %}">View all</a>
+        </div>
+        <ul class="list">
+            {% for lead in recent_leads %}
+            <li><span>{{ lead.full_name }}</span><strong>{{ lead.stage }}</strong></li>
+            {% empty %}
+            <li><span>No leads yet</span><strong>—</strong></li>
+            {% endfor %}
+        </ul>
+    </section>
+</div>
+
+<div class="content-grid" style="margin-top:18px;">
+    <section class="card">
+        <div class="card-header">
+            <h3>Campaign Activity</h3>
+        </div>
+        <ul class="list">
+            {% for campaign in recent_campaigns %}
+            <li><span>{{ campaign.name }}</span><strong>{{ campaign.status }}</strong></li>
+            {% empty %}
+            <li><span>No campaigns launched</span><strong>—</strong></li>
+            {% endfor %}
+        </ul>
+    </section>
+
+    <section class="card">
+        <div class="card-header">
+            <h3>Team Snapshot</h3>
+        </div>
+        <ul class="list">
+            <li><span>Sales</span><strong>7 active</strong></li>
+            <li><span>Finance</span><strong>4 pending</strong></li>
+            <li><span>HR</span><strong>2 onboarding</strong></li>
+        </ul>
+    </section>
+</div>
+{% endblock %}
