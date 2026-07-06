@@ -12,6 +12,8 @@ from rest_framework_simplejwt.exceptions import TokenError
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.views import TokenRefreshView
 
+from erp_modules.models import Customer, Employee, Inventory, Lead, Order, Product, Report
+
 User = get_user_model()
 
 
@@ -121,9 +123,21 @@ def dashboard_data_view(request):
     user = request.user
     return Response(
         {
-            'message': 'Authenticated dashboard data',
             'redirect_url': '/',
-            'user': {'email': user.email, 'first_name': user.first_name, 'last_name': user.last_name},
+            'user': {'email': user.email, 'full_name': user.get_full_name()},
+            'counts': {
+                'employees': Employee.objects.count(),
+                'leads': Lead.objects.count(),
+                'customers': Customer.objects.count(),
+                'products': Product.objects.count(),
+                'orders': Order.objects.count(),
+                'inventory_records': Inventory.objects.count(),
+                'reports': Report.objects.count(),
+            },
+            'recent_products': list(Product.objects.values('id', 'name', 'sku', 'stock', 'status')[:5]),
+            'recent_orders': list(Order.objects.values(
+                'id', 'order_number', 'customer_name', 'product__name', 'quantity', 'total_amount', 'status'
+            )[:5]),
         },
         status=status.HTTP_200_OK,
     )

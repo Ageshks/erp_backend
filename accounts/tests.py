@@ -83,6 +83,9 @@ class AuthAPITests(APITestCase):
         response = self.client.get(reverse('accounts:dashboard'), HTTP_AUTHORIZATION=f'Bearer {token}')
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.data['user']['email'], user.email)
+        self.assertIn('counts', response.data)
+        self.assertIn('recent_products', response.data)
+        self.assertIn('recent_orders', response.data)
 
     def test_superuser_can_access_admin_user_list(self):
         superuser = self.user_model.objects.create_superuser(email='admin@example.com', password='Admin@123456')

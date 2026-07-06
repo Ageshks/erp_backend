@@ -132,6 +132,10 @@ The app now includes module pages and REST APIs for:
 - Leads: `/api/leads/`
 - Vendors: `/api/vendors/`
 - Products: `/api/products/`
+- Customers: `/api/customers/`
+- Orders: `/api/orders/`
+- Inventory: `/api/inventory/`
+- Reports: `/api/reports/`
 - Invoices: `/api/invoices/`
 - Projects: `/api/projects/`
 
@@ -140,10 +144,14 @@ You can also open the ERP-style module pages in the browser at:
 - `/modules/leads/`
 - `/modules/vendors/`
 - `/modules/products/`
+- `/modules/customers/`
+- `/modules/orders/`
+- `/modules/inventory/`
+- `/modules/reports/`
 - `/modules/invoices/`
 - `/modules/projects/`
 
-The dashboard includes a Meta campaign launcher that simulates an ad run and creates a lead response entry.
+The dashboard reads live counts, recent products, orders, inventory, employees, and leads from the database.
 
 ## Testing
 

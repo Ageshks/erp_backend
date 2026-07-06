@@ -1,7 +1,7 @@
 from rest_framework import generics, permissions
 
-from erp_modules.models import Employee, Invoice, Lead, Product, Project, Vendor
-from erp_modules.serializers import EmployeeSerializer, InvoiceSerializer, LeadSerializer, ProductSerializer, ProjectSerializer, VendorSerializer
+from erp_modules.models import Customer, Employee, Inventory, Invoice, Lead, Order, Product, Project, Report, Vendor
+from erp_modules.serializers import CustomerSerializer, EmployeeSerializer, InventorySerializer, InvoiceSerializer, LeadSerializer, OrderSerializer, ProductSerializer, ProjectSerializer, ReportSerializer, VendorSerializer
 
 
 class EmployeeListCreateView(generics.ListCreateAPIView):
@@ -49,6 +49,57 @@ class ProductListCreateView(generics.ListCreateAPIView):
 class ProductDetailView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+
+class CustomerListCreateView(generics.ListCreateAPIView):
+    queryset = Customer.objects.all()
+    serializer_class = CustomerSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+
+class CustomerDetailView(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Customer.objects.all()
+    serializer_class = CustomerSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+
+class OrderListCreateView(generics.ListCreateAPIView):
+    queryset = Order.objects.select_related('customer', 'product').all()
+    serializer_class = OrderSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+
+class OrderDetailView(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Order.objects.select_related('customer', 'product').all()
+    serializer_class = OrderSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+
+class InventoryListCreateView(generics.ListCreateAPIView):
+    queryset = Inventory.objects.select_related('product').all()
+    serializer_class = InventorySerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+
+class InventoryDetailView(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Inventory.objects.select_related('product').all()
+    serializer_class = InventorySerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+
+class ReportListCreateView(generics.ListCreateAPIView):
+    queryset = Report.objects.select_related('created_by').all()
+    serializer_class = ReportSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def perform_create(self, serializer):
+        serializer.save(created_by=self.request.user)
+
+
+class ReportDetailView(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Report.objects.select_related('created_by').all()
+    serializer_class = ReportSerializer
     permission_classes = [permissions.IsAuthenticated]
 
 

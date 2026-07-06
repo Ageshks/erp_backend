@@ -41,12 +41,14 @@
                     <a href="{% url 'module_page' 'leads' %}" class="nav-item {% if active_page == 'leads' %}active{% endif %}">Leads</a>
                     <a href="{% url 'module_page' 'customers' %}" class="nav-item {% if active_page == 'customers' %}active{% endif %}">Customers</a>
                     <a href="{% url 'module_page' 'invoices' %}" class="nav-item {% if active_page == 'invoices' %}active{% endif %}">Invoices</a>
+                    <a href="{% url 'module_page' 'orders' %}" class="nav-item {% if active_page == 'orders' %}active{% endif %}">Orders</a>
                 </div>
 
                 <div class="nav-group">
                     <p class="nav-group-title">Procurement</p>
                     <a href="{% url 'module_page' 'vendors' %}" class="nav-item {% if active_page == 'vendors' %}active{% endif %}">Vendors</a>
                     <a href="{% url 'module_page' 'products' %}" class="nav-item {% if active_page == 'products' %}active{% endif %}">Products</a>
+                    <a href="{% url 'module_page' 'inventory' %}" class="nav-item {% if active_page == 'inventory' %}active{% endif %}">Inventory</a>
                 </div>
 
                 <div class="nav-group">
@@ -58,8 +60,8 @@
             </nav>
 
             <div class="sidebar-card">
-                <h3>Weekly Focus</h3>
-                <p>Close 12 deals and review payroll approvals.</p>
+                <h3>Signed in user</h3>
+                <p>{% if request.user.is_authenticated %}{{ request.user.email }}{% else %}API authentication required for data access{% endif %}</p>
             </div>
         </aside>
 
@@ -70,8 +72,8 @@
                     <h2>{% block page_title %}ERP Workspace{% endblock %}</h2>
                 </div>
                 <div class="topbar-actions">
-                    <button class="ghost-btn">Export</button>
-                    <button class="primary-btn">New Record</button>
+                    <a class="ghost-btn" href="{% url 'module_page' 'reports' %}">Reports</a>
+                    <a class="primary-btn" href="{% url 'module_page' 'products' %}">New Product</a>
                 </div>
             </header>
 

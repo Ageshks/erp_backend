@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from erp_modules.models import Employee, Invoice, Lead, Product, Project, Vendor
+from erp_modules.models import Customer, Employee, Inventory, Invoice, Lead, Order, Product, Project, Report, Vendor
 
 
 class EmployeeSerializer(serializers.ModelSerializer):
@@ -30,6 +30,32 @@ class ProductSerializer(serializers.ModelSerializer):
     class Meta:
         model = Product
         fields = '__all__'
+
+
+class CustomerSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Customer
+        fields = '__all__'
+
+
+class OrderSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Order
+        fields = '__all__'
+        read_only_fields = ['customer_name', 'total_amount']
+
+
+class InventorySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Inventory
+        fields = '__all__'
+
+
+class ReportSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Report
+        fields = '__all__'
+        read_only_fields = ['created_by']
 
 
 class InvoiceSerializer(serializers.ModelSerializer):

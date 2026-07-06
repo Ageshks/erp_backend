@@ -26,12 +26,12 @@
             <p>Leads</p>
         </div>
         <div>
-            <h4>24</h4>
-            <p>Open deals</p>
+            <h4>{{ order_count }}</h4>
+            <p>Orders</p>
         </div>
         <div>
-            <h4>12</h4>
-            <p>Pending approvals</p>
+            <h4>{{ pending_order_count }}</h4>
+            <p>Open orders</p>
         </div>
     </section>
 </div>
@@ -39,13 +39,13 @@
 <div class="content-grid">
     <section class="card">
         <div class="card-header">
-            <h3>Run Meta Ad</h3>
+            <h3>Recent Orders</h3>
         </div>
-        <form method="post" class="stacked-form">
-            {% csrf_token %}
-            {{ campaign_form.as_p }}
-            <button class="primary-btn" type="submit">Launch Campaign</button>
-        </form>
+        <ul class="list">
+            {% for order in recent_orders %}
+            <li><span>{{ order.order_number }} · {{ order.customer_name }}</span><strong>{{ order.status }}</strong></li>
+            {% empty %}<li><span>No orders yet</span><strong>—</strong></li>{% endfor %}
+        </ul>
     </section>
 
     <section class="card">
@@ -66,25 +66,25 @@
 <div class="content-grid" style="margin-top:18px;">
     <section class="card">
         <div class="card-header">
-            <h3>Campaign Activity</h3>
+            <h3>Recent Products</h3>
         </div>
         <ul class="list">
-            {% for campaign in recent_campaigns %}
-            <li><span>{{ campaign.name }}</span><strong>{{ campaign.status }}</strong></li>
+            {% for product in recent_products %}
+            <li><span>{{ product.name }}</span><strong>{{ product.stock }} in stock</strong></li>
             {% empty %}
-            <li><span>No campaigns launched</span><strong>—</strong></li>
+            <li><span>No products yet</span><strong>—</strong></li>
             {% endfor %}
         </ul>
     </section>
 
     <section class="card">
         <div class="card-header">
-            <h3>Team Snapshot</h3>
+            <h3>Business Snapshot</h3>
         </div>
         <ul class="list">
-            <li><span>Sales</span><strong>7 active</strong></li>
-            <li><span>Finance</span><strong>4 pending</strong></li>
-            <li><span>HR</span><strong>2 onboarding</strong></li>
+            <li><span>Products</span><strong>{{ product_count }}</strong></li>
+            <li><span>Inventory units</span><strong>{{ inventory_units }}</strong></li>
+            <li><span>Customers</span><strong>{{ customer_count }}</strong></li>
         </ul>
     </section>
 </div>

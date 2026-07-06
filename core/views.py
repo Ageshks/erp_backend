@@ -1,10 +1,8 @@
-from decimal import Decimal
-
+from django.db.models import Sum
 from django.shortcuts import redirect, render
-from django.utils.text import slugify
 
-from erp_modules.forms import EmployeeForm, InvoiceForm, LeadForm, MetaCampaignForm, ProductForm, ProjectForm, VendorForm
-from erp_modules.models import Employee, Invoice, Lead, MetaCampaign, Product, Project, Vendor
+from erp_modules.forms import CustomerForm, EmployeeForm, InventoryForm, InvoiceForm, LeadForm, MetaCampaignForm, OrderForm, ProductForm, ProjectForm, ReportForm, VendorForm
+from erp_modules.models import Customer, Employee, Inventory, Invoice, Lead, MetaCampaign, Order, Product, Project, Report, Vendor
 
 
 MODULE_DETAILS = {
@@ -57,6 +55,13 @@ MODULE_DETAILS = {
         'table_actions': ['Search', 'Filters', 'Sorting', 'Pagination', 'Export CSV', 'Export Excel', 'Print', 'Bulk Actions'],
         'modals': ['Create Modal', 'Edit Modal', 'Delete Confirmation', 'View Details Modal'],
     },
+    'customers': {
+        'title': 'Customers',
+        'subtitle': 'Manage customer contact details, companies, addresses, and status.',
+        'highlights': ['Customer directory', 'Contact details', 'Order history', 'Status tracking'],
+        'table_actions': ['Search', 'Filters'],
+        'modals': ['Create', 'Delete'],
+    },
     'vendors': {
         'title': 'Vendors',
         'subtitle': 'Vendor profiles, approvals, payments, and supplier performance.',
@@ -70,6 +75,20 @@ MODULE_DETAILS = {
         'highlights': ['Product master data', 'Stock levels', 'Barcode management', 'Reorder alerts'],
         'table_actions': ['Search', 'Filters', 'Sorting', 'Pagination', 'Export CSV', 'Export Excel', 'Print', 'Bulk Actions'],
         'modals': ['Create Modal', 'Edit Modal', 'Delete Confirmation', 'View Details Modal'],
+    },
+    'orders': {
+        'title': 'Orders',
+        'subtitle': 'Create and track customer orders from placement through completion.',
+        'highlights': ['Order entry', 'Product selection', 'Status tracking', 'Order totals'],
+        'table_actions': ['Search', 'Filters'],
+        'modals': ['Create', 'Delete'],
+    },
+    'inventory': {
+        'title': 'Inventory',
+        'subtitle': 'Manage product quantities, storage locations, and reorder levels.',
+        'highlights': ['Stock quantities', 'Locations', 'Reorder levels', 'Stock status'],
+        'table_actions': ['Search', 'Filters'],
+        'modals': ['Create', 'Delete'],
     },
     'invoices': {
         'title': 'Invoices',
@@ -104,38 +123,26 @@ MODULE_DETAILS = {
 
 def dashboard_view(request):
     recent_leads = Lead.objects.select_related('owner').order_by('-created_at')[:5]
-    recent_campaigns = MetaCampaign.objects.order_by('-created_at')[:5]
     employee_count = Employee.objects.count()
     lead_count = Lead.objects.count()
+    customer_count = Customer.objects.count()
+    product_count = Product.objects.count()
+    order_count = Order.objects.count()
+    pending_order_count = Order.objects.filter(status__in=['pending', 'processing']).count()
+    inventory_units = Inventory.objects.aggregate(total=Sum('quantity'))['total'] or 0
 
-    if request.method == 'POST':
-        form = MetaCampaignForm(request.POST)
-        if form.is_valid():
-            campaign = form.save(commit=False)
-            campaign.status = 'running'
-            campaign.response_summary = (
-                f"Simulated Meta ad delivery is live for {campaign.audience}. "
-                f"Expected response: {max(8, int(campaign.budget / 20))} leads this week."
-            )
-            campaign.save()
-
-            Lead.objects.create(
-                full_name=f"{campaign.name} Prospect",
-                email=f"{slugify(campaign.name)}@meta.local",
-                company=f"Meta {campaign.name}",
-                source='social',
-                stage='new',
-                notes=f"Meta campaign response from {campaign.audience}.",
-            )
-
-    form = MetaCampaignForm()
     return render(request, 'dashboard.html', {
         'active_page': 'dashboard',
         'employee_count': employee_count,
         'lead_count': lead_count,
+        'customer_count': customer_count,
+        'product_count': product_count,
+        'order_count': order_count,
+        'pending_order_count': pending_order_count,
+        'inventory_units': inventory_units,
+        'recent_orders': Order.objects.select_related('product')[:5],
+        'recent_products': Product.objects.all()[:5],
         'recent_leads': recent_leads,
-        'recent_campaigns': recent_campaigns,
-        'campaign_form': form,
     })
 
 
@@ -156,7 +163,7 @@ def projects_view(request):
 
 
 def reports_view(request):
-    return render(request, 'reports.html', {'active_page': 'reports'})
+    return redirect('module_page', 'reports')
 
 
 def module_page_view(request, module_slug):
@@ -193,6 +200,28 @@ def module_page_view(request, module_slug):
             if form.is_valid():
                 form.save()
                 return redirect('module_page', module_slug)
+        elif module_slug == 'customers':
+            form = CustomerForm(request.POST)
+            if form.is_valid():
+                form.save()
+                return redirect('module_page', module_slug)
+        elif module_slug == 'orders':
+            form = OrderForm(request.POST)
+            if form.is_valid():
+                form.save()
+                return redirect('module_page', module_slug)
+        elif module_slug == 'inventory':
+            form = InventoryForm(request.POST)
+            if form.is_valid():
+                form.save()
+                return redirect('module_page', module_slug)
+        elif module_slug == 'reports':
+            form = ReportForm(request.POST)
+            if form.is_valid():
+                report = form.save(commit=False)
+                report.created_by = request.user if request.user.is_authenticated else None
+                report.save()
+                return redirect('module_page', module_slug)
         elif module_slug == 'invoices':
             form = InvoiceForm(request.POST)
             if form.is_valid():
@@ -216,6 +245,18 @@ def module_page_view(request, module_slug):
         return redirect('module_page', module_slug)
     if delete_id and module_slug == 'products':
         Product.objects.filter(pk=delete_id).delete()
+        return redirect('module_page', module_slug)
+    if delete_id and module_slug == 'customers':
+        Customer.objects.filter(pk=delete_id).delete()
+        return redirect('module_page', module_slug)
+    if delete_id and module_slug == 'orders':
+        Order.objects.filter(pk=delete_id).delete()
+        return redirect('module_page', module_slug)
+    if delete_id and module_slug == 'inventory':
+        Inventory.objects.filter(pk=delete_id).delete()
+        return redirect('module_page', module_slug)
+    if delete_id and module_slug == 'reports':
+        Report.objects.filter(pk=delete_id).delete()
         return redirect('module_page', module_slug)
     if delete_id and module_slug == 'invoices':
         Invoice.objects.filter(pk=delete_id).delete()
@@ -248,6 +289,28 @@ def module_page_view(request, module_slug):
         if status_filter:
             products = products.filter(status=status_filter)
 
+    customers = Customer.objects.all() if module_slug == 'customers' else []
+    if module_slug == 'customers':
+        customers = customers.filter(name__icontains=q) if q else customers
+        if status_filter:
+            customers = customers.filter(status=status_filter)
+
+    orders = Order.objects.select_related('product').all() if module_slug == 'orders' else []
+    if module_slug == 'orders':
+        orders = orders.filter(order_number__icontains=q) if q else orders
+        if status_filter:
+            orders = orders.filter(status=status_filter)
+
+    inventory = Inventory.objects.select_related('product').all() if module_slug == 'inventory' else []
+    if module_slug == 'inventory' and q:
+        inventory = inventory.filter(product__name__icontains=q)
+
+    reports = Report.objects.select_related('created_by').all() if module_slug == 'reports' else []
+    if module_slug == 'reports':
+        reports = reports.filter(title__icontains=q) if q else reports
+        if status_filter:
+            reports = reports.filter(status=status_filter)
+
     invoices = Invoice.objects.all() if module_slug == 'invoices' else []
     if module_slug == 'invoices':
         invoices = invoices.filter(invoice_number__icontains=q) if q else invoices
@@ -263,6 +326,10 @@ def module_page_view(request, module_slug):
     lead_form = LeadForm() if module_slug == 'leads' else None
     vendor_form = VendorForm() if module_slug == 'vendors' else None
     product_form = ProductForm() if module_slug == 'products' else None
+    customer_form = CustomerForm() if module_slug == 'customers' else None
+    order_form = OrderForm() if module_slug == 'orders' else None
+    inventory_form = InventoryForm() if module_slug == 'inventory' else None
+    report_form = ReportForm() if module_slug == 'reports' else None
     invoice_form = InvoiceForm() if module_slug == 'invoices' else None
     project_form = ProjectForm() if module_slug == 'projects' else None
 
@@ -276,12 +343,20 @@ def module_page_view(request, module_slug):
         'leads': leads,
         'vendors': vendors,
         'products': products,
+        'customers': customers,
+        'orders': orders,
+        'inventory': inventory,
+        'reports': reports,
         'invoices': invoices,
         'projects': projects,
         'employee_form': employee_form,
         'lead_form': lead_form,
         'vendor_form': vendor_form,
         'product_form': product_form,
+        'customer_form': customer_form,
+        'order_form': order_form,
+        'inventory_form': inventory_form,
+        'report_form': report_form,
         'invoice_form': invoice_form,
         'project_form': project_form,
     })

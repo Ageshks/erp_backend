@@ -3,7 +3,7 @@ from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APITestCase
 
-from erp_modules.models import Employee, Lead
+from erp_modules.models import Customer, Employee, Inventory, Lead, Order, Product, Report
 
 
 class ModuleCrudTests(APITestCase):
@@ -48,15 +48,43 @@ class ModuleCrudTests(APITestCase):
         delete_response = self.client.delete(detail_url)
         self.assertEqual(delete_response.status_code, status.HTTP_204_NO_CONTENT)
 
-    def test_dashboard_meta_campaign_flow(self):
-        response = self.client.post(reverse('dashboard'), {
-            'name': 'Spring Launch',
-            'objective': 'LEAD_GENERATION',
-            'audience': 'SMB Owners',
-            'budget': '150',
-        })
+    def test_dashboard_uses_database_records(self):
+        Product.objects.create(name='Widget', sku='W-1', price='10.00', stock=3)
+        response = self.client.get(reverse('dashboard'))
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertTrue(Lead.objects.filter(company__icontains='Meta').exists())
+        self.assertContains(response, 'Widget')
+
+    def test_product_order_inventory_and_report_crud(self):
+        customer_response = self.client.post(reverse('erp_modules:customer-list-create'), {
+            'name': 'Tester', 'email': 'customer@example.com', 'status': 'active',
+        })
+        self.assertEqual(customer_response.status_code, status.HTTP_201_CREATED)
+        customer = Customer.objects.get(email='customer@example.com')
+
+        product_response = self.client.post(reverse('erp_modules:product-list-create'), {
+            'name': 'Widget', 'sku': 'W-1', 'price': '10.00', 'stock': 0, 'status': 'out_of_stock',
+        })
+        self.assertEqual(product_response.status_code, status.HTTP_201_CREATED)
+        product = Product.objects.get(sku='W-1')
+
+        inventory_response = self.client.post(reverse('erp_modules:inventory-list-create'), {
+            'product': product.pk, 'quantity': 12, 'reorder_level': 3, 'location': 'A1',
+        })
+        self.assertEqual(inventory_response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(Product.objects.get(pk=product.pk).stock, 12)
+
+        order_response = self.client.post(reverse('erp_modules:order-list-create'), {
+            'order_number': 'ORD-1', 'customer': customer.pk, 'product': product.pk, 'quantity': 2,
+        })
+        self.assertEqual(order_response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(Order.objects.get(order_number='ORD-1').total_amount, 20)
+        self.assertEqual(Order.objects.get(order_number='ORD-1').customer_name, 'Tester')
+
+        report_response = self.client.post(reverse('erp_modules:report-list-create'), {
+            'title': 'Stock report', 'report_type': 'inventory', 'status': 'ready',
+        })
+        self.assertEqual(report_response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(Report.objects.get().created_by, self.user)
 
     def test_module_search_and_inline_edit(self):
         employee = Employee.objects.create(

@@ -1,6 +1,6 @@
 from django import forms
 
-from erp_modules.models import Employee, Invoice, Lead, MetaCampaign, Product, Project, Vendor
+from erp_modules.models import Customer, Employee, Inventory, Invoice, Lead, MetaCampaign, Order, Product, Project, Report, Vendor
 
 
 class EmployeeForm(forms.ModelForm):
@@ -31,6 +31,30 @@ class ProductForm(forms.ModelForm):
     class Meta:
         model = Product
         fields = ['name', 'sku', 'category', 'price', 'stock', 'status']
+
+
+class CustomerForm(forms.ModelForm):
+    class Meta:
+        model = Customer
+        fields = ['name', 'email', 'phone', 'company', 'address', 'status']
+
+
+class OrderForm(forms.ModelForm):
+    class Meta:
+        model = Order
+        fields = ['order_number', 'customer', 'product', 'quantity', 'status']
+
+
+class InventoryForm(forms.ModelForm):
+    class Meta:
+        model = Inventory
+        fields = ['product', 'quantity', 'reorder_level', 'location']
+
+
+class ReportForm(forms.ModelForm):
+    class Meta:
+        model = Report
+        fields = ['title', 'report_type', 'status', 'notes']
 
 
 class InvoiceForm(forms.ModelForm):
