@@ -29,11 +29,7 @@ SECRET_KEY = 'django-insecure-%ilp)w9ac$@o^ykjt#mt3$fmbdt1zhnl@7h3mv&^!9f^2#s6re
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = [
-    "erpbackend-production-0d19.up.railway.app",
-    "localhost",
-    "127.0.0.1",
-]
+ALLOWED_HOSTS = ["*"]
 # Application definition
 
 INSTALLED_APPS = [
