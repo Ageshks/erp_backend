@@ -20,18 +20,17 @@ User = get_user_model()
 def signup_view(request):
     email = request.data.get('email', '').strip().lower()
     password = request.data.get('password', '')
-    password_confirm = request.data.get('password_confirm', '')
+    full_name = request.data.get('full_name', '').strip()
 
-    if not email or not password:
-        return Response({'detail': 'Email and password are required.'}, status=status.HTTP_400_BAD_REQUEST)
-    if password != password_confirm:
-        return Response({'detail': 'Passwords do not match.'}, status=status.HTTP_400_BAD_REQUEST)
+    if not email or not password or not full_name:
+        return Response({'detail': 'Email, password, and full name are required.'}, status=status.HTTP_400_BAD_REQUEST)
     if User.objects.filter(email=email).exists():
         return Response({'detail': 'A user with that email already exists.'}, status=status.HTTP_400_BAD_REQUEST)
 
+    name_parts = full_name.split(maxsplit=1)
     user = User.objects.create_user(email=email, password=password)
-    user.first_name = request.data.get('first_name', '').strip()
-    user.last_name = request.data.get('last_name', '').strip()
+    user.first_name = name_parts[0]
+    user.last_name = name_parts[1] if len(name_parts) > 1 else ''
     user.save(update_fields=['first_name', 'last_name'])
 
     refresh = RefreshToken.for_user(user)
@@ -40,7 +39,7 @@ def signup_view(request):
             'access': str(refresh.access_token),
             'refresh': str(refresh),
             'redirect_url': '/',
-            'user': {'email': user.email, 'first_name': user.first_name, 'last_name': user.last_name},
+            'user': {'email': user.email, 'full_name': user.get_full_name()},
         },
         status=status.HTTP_201_CREATED,
     )

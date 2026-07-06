@@ -60,9 +60,7 @@ http://127.0.0.1:8000/auth/
   {
     "email": "user@example.com",
     "password": "StrongPass123!",
-    "password_confirm": "StrongPass123!",
-    "first_name": "John",
-    "last_name": "Doe"
+    "full_name": "John Doe"
   }
   ```
 

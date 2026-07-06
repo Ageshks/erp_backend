@@ -15,9 +15,7 @@ class AuthAPITests(APITestCase):
         payload = {
             'email': 'newuser@example.com',
             'password': 'StrongPass123!',
-            'password_confirm': 'StrongPass123!',
-            'first_name': 'Jane',
-            'last_name': 'Doe',
+            'full_name': 'Jane Doe',
         }
 
         response = self.client.post(self.signup_url, payload, format='json')
@@ -26,7 +24,19 @@ class AuthAPITests(APITestCase):
         self.assertIn('access', response.data)
         self.assertIn('refresh', response.data)
         self.assertEqual(response.data['redirect_url'], '/')
-        self.assertTrue(self.user_model.objects.filter(email='newuser@example.com').exists())
+        self.assertEqual(response.data['user']['full_name'], 'Jane Doe')
+        user = self.user_model.objects.get(email='newuser@example.com')
+        self.assertEqual(user.first_name, 'Jane')
+        self.assertEqual(user.last_name, 'Doe')
+
+    def test_signup_requires_full_name(self):
+        response = self.client.post(self.signup_url, {
+            'email': 'newuser@example.com',
+            'password': 'StrongPass123!',
+        }, format='json')
+
+        self.assertEqual(response.status_code, 400)
+        self.assertIn('full name', response.data['detail'].lower())
 
     def test_login_returns_tokens_for_existing_user(self):
         self.user_model.objects.create_user(email='login@example.com', password='StrongPass123!')
